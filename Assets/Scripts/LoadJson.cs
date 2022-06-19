@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using Newtonsoft.Json;
+using UnityEngine.Networking;
 
 public class LoadJson : MonoBehaviour
 {
@@ -16,7 +17,12 @@ public class LoadJson : MonoBehaviour
     /// <returns></returns>
     public Item[] items()
     {
-        return JsonConvert.DeserializeObject<Item[]>(File.ReadAllText(_path));
+        UnityWebRequest www = UnityWebRequest.Get(_path);
+        www.SendWebRequest();
+        while (!www.downloadHandler.isDone) { }
+        string json = www.downloadHandler.text;
+
+        return JsonConvert.DeserializeObject<Item[]>(json);
     }
 
     private void Awake()
